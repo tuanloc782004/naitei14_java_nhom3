@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+	<!-- Footer Fragment -->
+	<footer th:fragment="footer"
+		class="bg-white border-t border-gray-200 mt-12">
+		<div class="px-8 py-6">
+			<!-- Bottom Bar -->
+			<div
+				class="border-t border-gray-200 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+				<p class="text-sm text-gray-600 mb-4 md:mb-0">
+					© <span th:text="${#dates.year(#dates.createNow())}">2024</span> <span
+						class="font-semibold text-blue-900">Framgia Booking</span>. All
+					rights reserved.
+				</p>
+				<div class="flex items-center space-x-6 text-sm text-gray-600">
+					<span class="text-xs"> Version 1.0.0 | <i
+						class="fas fa-server text-green-500"></i> Online
+					</span>
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

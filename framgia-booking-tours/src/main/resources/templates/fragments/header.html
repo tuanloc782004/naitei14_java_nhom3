@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Header Fragment -->
+    <header th:fragment="header" class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="flex items-center justify-between px-8 py-4">
+            <!-- Breadcrumb -->
+            <div class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-home mr-2"></i>
+                <span class="mr-2">Trang chủ</span>
+                <i class="fas fa-chevron-right text-xs mr-2"></i>
+                <span class="text-blue-900 font-semibold" th:text="${pageTitle}">Tổng quan</span>
+            </div>
+
+            <!-- Right Side: Profile -->
+            <div class="flex items-center space-x-4">
+                <!-- Admin Profile -->
+                <div class="flex items-center space-x-3 pl-4 border-l">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=1e40af&color=fff" 
+                             alt="Admin" class="w-10 h-10 rounded-full border-2 border-blue-900">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">Admin</p>
+                            <p class="text-xs text-gray-500">Quản trị viên</p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</body>
+</html>

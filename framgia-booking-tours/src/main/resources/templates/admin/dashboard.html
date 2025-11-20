@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Framgia Booking Admin</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- FontAwesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Chart.js -->
+<script
+	src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Custom CSS -->
+<link rel="stylesheet" th:href="@{css/admin.css}">
+</head>
+<body class="bg-gray-50">
+
+	<!-- Sidebar -->
+	<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+	<!-- Main Content -->
+	<div class="ml-64">
+		<!-- Header -->
+		<div th:replace="~{fragments/header :: header}"></div>
+
+		<main>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+			<h1>HELLO UNIVERSE</h1>
+		</main>
+
+		<!-- Footer -->
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+
+	<!-- JavaScript -->
+	<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>
