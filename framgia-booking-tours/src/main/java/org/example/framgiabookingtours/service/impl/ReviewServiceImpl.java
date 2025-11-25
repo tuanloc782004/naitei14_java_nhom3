@@ -4,17 +4,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.framgiabookingtours.dto.request.ReviewRequestDTO;
 import org.example.framgiabookingtours.dto.request.UpdateReviewRequestDTO;
+import org.example.framgiabookingtours.dto.response.ReviewListItemDTO;
 import org.example.framgiabookingtours.dto.response.ReviewResponseDTO;
 import org.example.framgiabookingtours.entity.Booking;
+import org.example.framgiabookingtours.entity.Profile;
 import org.example.framgiabookingtours.entity.Review;
 import org.example.framgiabookingtours.entity.User;
 import org.example.framgiabookingtours.enums.BookingStatus;
 import org.example.framgiabookingtours.exception.AppException;
 import org.example.framgiabookingtours.exception.ErrorCode;
 import org.example.framgiabookingtours.repository.BookingRepository;
+import org.example.framgiabookingtours.repository.CommentRepository;
+import org.example.framgiabookingtours.repository.ReviewLikeRepository;
 import org.example.framgiabookingtours.repository.ReviewRepository;
+import org.example.framgiabookingtours.repository.TourRepository;
 import org.example.framgiabookingtours.repository.UserRepository;
 import org.example.framgiabookingtours.service.ReviewService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +33,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
+    private final TourRepository tourRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -139,5 +149,48 @@ public class ReviewServiceImpl implements ReviewService {
         // Soft delete: đánh dấu là đã xóa
         review.setIsDeleted(true);
         reviewRepository.save(review);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewListItemDTO> getReviewsByTourId(Long tourId, Pageable pageable) {
+        // Kiểm tra tour tồn tại
+        if (!tourRepository.existsById(tourId)) {
+            throw new AppException(ErrorCode.TOUR_NOT_FOUND);
+        }
+
+        // Lấy danh sách reviews theo tour
+        Page<Review> reviews = reviewRepository.findByTourId(tourId, pageable);
+
+        // Map sang DTO
+        return reviews.map(review -> {
+            User user = review.getBooking().getUser();
+            Profile profile = user.getProfile();
+
+            // Đếm likes và comments
+            long likeCount = reviewLikeRepository.countByReviewIdAndIsDeletedFalse(review.getId());
+            long commentCount = commentRepository.countByReviewIdAndIsDeletedFalse(review.getId());
+
+            // Tạo user info DTO
+            ReviewListItemDTO.UserInfoDTO userInfo = ReviewListItemDTO.UserInfoDTO.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .fullName(profile != null ? profile.getFullName() : null)
+                    .avatarUrl(profile != null ? profile.getAvatarUrl() : null)
+                    .build();
+
+            // Tạo review DTO
+            return ReviewListItemDTO.builder()
+                    .id(review.getId())
+                    .title(review.getTitle())
+                    .content(review.getContent())
+                    .rating(review.getRating())
+                    .createdAt(review.getCreatedAt())
+                    .updatedAt(review.getUpdatedAt())
+                    .user(userInfo)
+                    .likeCount(likeCount)
+                    .commentCount(commentCount)
+                    .build();
+        });
     }
 }
