@@ -1,5 +1,7 @@
 package org.example.framgiabookingtours.controller;
 
+import java.math.BigDecimal;
+
 import org.example.framgiabookingtours.dto.ApiResponse;
 import org.example.framgiabookingtours.dto.response.ReviewListItemDTO;
 import org.example.framgiabookingtours.dto.response.TourResponseDTO;
@@ -25,9 +27,15 @@ public class PublicTourController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDirection
+            @RequestParam(defaultValue = "DESC") String sortDirection,
+            
+            @RequestParam(value = "q", required = false) String keyword,
+            @RequestParam(value = "category_id", required = false) Long categoryId,
+            @RequestParam(value = "price_min", required = false) BigDecimal minPrice,
+            @RequestParam(value = "price_max", required = false) BigDecimal maxPrice
     ) {
-        Page<TourResponseDTO> tourPage = tourService.getAvailableTours(page, size, sortBy, sortDirection);
+        Page<TourResponseDTO> tourPage = tourService.getAvailableTours(page, size, sortBy, sortDirection, 
+                keyword, categoryId, minPrice, maxPrice);
 
         return ResponseEntity.ok(ApiResponse.<Page<TourResponseDTO>>builder()
                 .code(1000)
