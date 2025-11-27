@@ -3,12 +3,17 @@ package org.example.framgiabookingtours.service.impl;
 import org.example.framgiabookingtours.dto.response.TourResponseDTO;
 import org.example.framgiabookingtours.entity.Tour;
 import org.example.framgiabookingtours.enums.TourStatus;
+import org.example.framgiabookingtours.exception.AppException;
+import org.example.framgiabookingtours.exception.ErrorCode;
 import org.example.framgiabookingtours.repository.TourRepository;
+import org.example.framgiabookingtours.repository.TourSpecification;
 import org.example.framgiabookingtours.service.TourService;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -18,7 +23,8 @@ public class TourServiceImpl implements TourService {
     private final TourRepository tourRepository;
 
     @Override
-    public Page<TourResponseDTO> getAvailableTours(int page, int size, String sortBy, String sortDirection) {
+    public Page<TourResponseDTO> getAvailableTours(int page, int size, String sortBy, String sortDirection, 
+            String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
         
         Sort.Direction direction = Sort.Direction.DESC;
         try {
@@ -26,14 +32,34 @@ public class TourServiceImpl implements TourService {
         } catch (IllegalArgumentException e) {
             
         }
+        
+        Specification<Tour> spec = Specification
+                .where(TourSpecification.isAvailable()); // Chỉ lấy Tour AVAILABLE (F2.4)
+        
+        // 2. Thêm các điều kiện lọc và tìm kiếm (có thể null nếu không có tham số)
+        spec = spec.and(TourSpecification.hasKeyword(keyword));
+        spec = spec.and(TourSpecification.hasCategoryId(categoryId));
+        spec = spec.and(TourSpecification.hasPriceRange(minPrice, maxPrice));
 
         Sort sort = Sort.by(direction, sortBy);
         
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Tour> tourPage = tourRepository.findByStatus(TourStatus.AVAILABLE, pageable);
+        Page<Tour> tourPage = tourRepository.findAll(spec, pageable);
 
         return tourPage.map(this::convertToDto);
+    }
+    
+    @Override
+    public TourResponseDTO getTourDetail(Long tourId) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new AppException(ErrorCode.TOUR_NOT_FOUND));
+
+        if (tour.getStatus() != TourStatus.AVAILABLE) {
+            throw new AppException(ErrorCode.TOUR_NOT_AVAILABLE);
+        }
+        
+        return convertToDto(tour);
     }
    
     private TourResponseDTO convertToDto(Tour tour) {
