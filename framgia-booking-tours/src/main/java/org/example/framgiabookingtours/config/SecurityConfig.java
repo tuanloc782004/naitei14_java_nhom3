@@ -67,9 +67,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/admin/**").authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
+
                 )
 
                 .formLogin(form -> form

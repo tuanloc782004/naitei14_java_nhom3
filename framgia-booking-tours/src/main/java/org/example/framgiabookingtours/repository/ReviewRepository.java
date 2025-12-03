@@ -29,4 +29,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
            "WHERE b.tour.id = :tourId " +
            "AND r.isDeleted = false")
     Double getAverageRatingByTourId(@Param("tourId") Long tourId);
+
+    @Query("SELECT r FROM Review r WHERE r.isDeleted = false ORDER BY r.createdAt DESC")
+    Page<Review> findAllActive(Pageable pageable);
 }

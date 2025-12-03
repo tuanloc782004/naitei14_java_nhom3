@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/admin.css}">
+</head>
+<body class="bg-gray-50 font-sans">
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="ml-64">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="p-8">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div
+                    class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-900">
+                        Danh Sách Review
+                    </h3>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead
+                            class="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b">
+                    <tr>
+                        <th class="px-6 py-4">ID</th>
+                        <th class="px-6 py-4">Tour</th>
+                        <th class="px-6 py-4">User</th>
+                        <th class="px-6 py-4">Rating</th>
+                        <th class="px-6 py-4">Comments</th>
+                        <th class="px-6 py-4">Ngày tạo</th>
+                        <th class="px-6 py-4 text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm">
+                    <tr th:each="review : ${reviews}" class="hover:bg-blue-50 transition">
+                        <td class="px-6 py-4 font-medium text-gray-500"
+                            th:text="'#' + ${review.id}"></td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-gray-900"
+                                      th:text="${review.booking.tour.name}">Tour name</span>
+                                <span class="text-xs text-gray-500"
+                                      th:text="'Booking #' + ${review.booking.id}"></span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <img
+                                        th:src="${review.booking.user.profile != null && review.booking.user.profile.avatarUrl != null ? review.booking.user.profile.avatarUrl : 'https://ui-avatars.com/api/?name=' + review.booking.user.email}"
+                                        class="w-8 h-8 rounded-full border object-cover">
+                                <div>
+                                    <div class="font-semibold text-gray-900"
+                                         th:text="${review.booking.user.profile != null ? review.booking.user.profile.fullName : review.booking.user.email}"></div>
+                                    <div class="text-xs text-gray-500"
+                                         th:text="${review.booking.user.email}"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-700">
+                                <i class="fas fa-star mr-1 text-yellow-500"></i>
+                                <span th:text="${review.rating}">5</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                                <i class="fas fa-comments mr-1"></i>
+                                <span th:text="${commentCounts[review.id]}">0</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600"
+                            th:text="${review.createdAt}"></td>
+                        <td class="px-6 py-4 text-center space-x-2">
+                            <a th:href="@{/admin/reviews/{id}(id=${review.id})}"
+                               class="inline-block bg-white border border-gray-200 text-blue-600 hover:bg-blue-50 hover:text-blue-800 px-3 py-1.5 rounded-lg transition shadow-sm">
+                                <i class="fas fa-eye mr-1"></i> Chi tiết
+                            </a>
+                            <form th:action="@{/admin/reviews/{id}/delete(id=${review.id})}"
+                                  method="post" class="inline-block"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa review này không?');">
+                                <button type="submit"
+                                        class="bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                    <i class="fas fa-trash-alt mr-1"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                    class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center text-sm text-gray-600">
+                <div>
+                    Hiển thị <span class="font-bold"
+                                   th:text="${(currentPage - 1) * pageSize + 1}">1</span> -
+                    <span class="font-bold"
+                          th:text="${(currentPage * pageSize) > totalItems ? totalItems : (currentPage * pageSize)}">10</span>
+                    trong tổng số <span class="font-bold" th:text="${totalItems}">0</span>
+                    review
+                </div>
+
+                <div class="flex gap-1" th:if="${totalPages > 1}">
+                    <a
+                            th:href="@{/admin/reviews(page=${currentPage - 1}, size=${pageSize})}"
+                            th:classappend="${currentPage == 1} ? 'pointer-events-none opacity-50' : ''"
+                            class="px-3 py-1 border rounded bg-white hover:bg-gray-100 transition">
+                        Trước
+                    </a>
+
+                    <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                        <a th:if="${i >= currentPage - 2 && i <= currentPage + 2}"
+                           th:href="@{/admin/reviews(page=${i}, size=${pageSize})}"
+                           th:text="${i}"
+                           th:classappend="${currentPage == i} ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-100'"
+                           class="px-3 py-1 border rounded transition">
+                        </a>
+                    </th:block>
+
+                    <a
+                            th:href="@{/admin/reviews(page=${currentPage + 1}, size=${pageSize})}"
+                            th:classappend="${currentPage == totalPages} ? 'pointer-events-none opacity-50' : ''"
+                            class="px-3 py-1 border rounded bg-white hover:bg-gray-100 transition">
+                        Sau
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>
+
+
