@@ -43,19 +43,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-    public void updateUserStatus(Long id, String status) {
-        // 1. Tìm User, nếu không thấy thì ném lỗi
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+	public void updateUserStatus(Long id, String status) {
+		// 1. Tìm User, nếu không thấy thì ném lỗi
+		User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        try {
-            // 2. Chuyển String sang Enum và lưu
-            UserStatus newStatus = UserStatus.valueOf(status);
-            user.setStatus(newStatus);
-            userRepository.save(user);
-        } catch (IllegalArgumentException e) {
-            // Trường hợp status gửi lên không đúng định dạng
-            throw new RuntimeException("Invalid status: " + status);
-        }
-    }
+		try {
+			// 2. Chuyển String sang Enum và lưu
+			UserStatus newStatus = UserStatus.valueOf(status);
+			user.setStatus(newStatus);
+			userRepository.save(user);
+		} catch (IllegalArgumentException e) {
+			// Trường hợp status gửi lên không đúng định dạng
+			throw new RuntimeException("Invalid status: " + status);
+		}
+	}
+
+	@Override
+	public User getUserById(Long id) {
+		return userRepository.findById(id).orElseThrow(() -> new org.example.framgiabookingtours.exception.AppException(
+				org.example.framgiabookingtours.exception.ErrorCode.USER_NOT_EXISTED));
+	}
 }

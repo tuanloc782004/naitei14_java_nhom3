@@ -14,5 +14,6 @@ public interface BookingService {
     List<BookingResponseDTO> getMyBookings(String userEmail);
     AdminDashboardStatsDTO getBookingStats();
     List<Booking> getAllBookings();
+    List<Booking> getBookingsByUserId(Long userId);
 }
 

@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
 	Page<User> getAllUsers(String status, String role, String keyword, Pageable pageable);
 	void updateUserStatus(Long id, String status);
+	User getUserById(Long id);
 }

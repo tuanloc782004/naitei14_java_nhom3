@@ -147,5 +147,10 @@ public class BookingServiceImpl implements BookingService {
         log.info("Admin đang lấy tất cả booking...");
         return bookingRepository.findAllWithUserAndTour();
     }
+    
+    @Override
+    public List<Booking> getBookingsByUserId(Long userId) {
+        return bookingRepository.findByUserIdOrderByBookingDateDesc(userId);
+    }
 }
 
