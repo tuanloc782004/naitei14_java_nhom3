@@ -14,4 +14,6 @@ public interface TourRepository extends JpaRepository<Tour, Long>, JpaSpecificat
     
 	// Page<Tour> findByStatus(TourStatus status, Pageable pageable);
 	
+	long countByStatus(TourStatus status);
+	
 } //Kế thừa JpaSpecificationExecutor để hỗ trợ lọc phức tạp (sẽ dùng trong F2)
